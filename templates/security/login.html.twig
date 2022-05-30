@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello SecurityController!{% endblock %}
+
+{% block stylesheets %}
+
+    {{ encore_entry_link_tags('login') }}
+
+{% endblock %}
+
+{% block javascripts %}
+
+    {{ encore_entry_script_tags('login') }}
+
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-6 login-container shadow-lg">
+        <div class="container">
+            <h2 class="text-center">Sign in</h2>
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3 form-group">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" class="form-control" id="email"
+                               aria-describedby="emailHelp" placeholder="Enter email">
+                        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
+                            else.</small>
+                    </div>
+                    <div class=" mb-3 form-group">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" class="form-control" id="password"
+                               placeholder="Password">
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                        <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+            <div class="card-footer">
+                <a href="{{ path('app_login') }}"></a>
+                <a href="#">No Account yet? Regiter now</a>
+                {% if error %}
+                    <di class="alert alert-danger">{{error.messageKey}}</di>
+                {%endif%}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
