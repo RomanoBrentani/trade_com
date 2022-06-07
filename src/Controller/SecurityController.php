@@ -17,14 +17,15 @@ class SecurityController extends AbstractController
         return $this->render('security/login.html.twig', [
             'form' => $form,
             'error' => $authenticationUtils->getLastAuthenticationError(),
+            'last_username' => $authenticationUtils->getLastUsername(),
         ]);
     }
 
 
 
     #[Route('/logout', name: 'app_logout')]
-    public function logout(AuthenticationUtils $authenticationUtils): Response
+    public function logout(): Response
     {
-        throw new \Exception('logout should never be reached');
+        throw new \Exception('logout() should never be reached');
     }
 }
