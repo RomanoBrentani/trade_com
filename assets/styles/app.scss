@@ -1,17 +1,23 @@
 @import "bootstrap/dist/css/bootstrap.css";
 
+.nav-container{
+    background-color: #ECB10C;
+}
 
 body {
     background-color: white;
+    font-family: Serif, serif;
+    font-weight: bold;
 }
 
 .submit-button{
     background-color: #ECB10C;
     color: black;
-;
 }
 
-p{
-    font-family: Serif, serif;
-    font-weight: bold;
+label{
+    margin: 5rem;
 }
+
+
+
