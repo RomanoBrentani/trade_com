@@ -5,40 +5,72 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @Route(defaults={"_is_api": true})
+ */
 class RegistrationController extends AbstractController
 {
-    #[Route('/register', name: 'app_register')]
+    private $logger;
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger=$logger;
+    }
+
+    #[Route('/api/register', name: 'app_register', methods: ['post', 'options'], options: ['Content-type' => 'application/json'])]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
-        $form = $this->createForm(RegistrationFormType::class, $user);
-        $form->handleRequest($request);
+        /**
+         *  $form = $this->createForm(RegistrationFormType::class, $user);
+         * $form->handleRequest($request);
+         */
+        $data = json_decode($request->getContent(), true);
+        if ($data === null){
+            throw new BadRequestException('Invalid Json');
+        }
+        
+        $email = $data['email'];
+        $password = $data['password'];
+        $firstName = $data['firstName'];
+        $lastName = $data['lastName'];
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        $user->setLastName($lastName);
+        $user->setPassword($password);
+        $user->setEmail($email);
+        $user->setFirstName($firstName);
+
+
+        if ($email && $password) {
             // encode the plain password
             $user->setPassword(
-            $userPasswordHasher->hashPassword(
+                $userPasswordHasher->hashPassword(
                     $user,
-                    $form->get('plainPassword')->getData()
+                    $password
                 )
             );
+            $user->setFirstName($firstName);
+            $user->setLastName($lastName);
 
             $entityManager->persist($user);
             $entityManager->flush();
-            // do anything else you need here, like send an email
+            $response = new Response("successfully created account for" . $user->getEmail(), 200);
+            $response->headers->set('Access-Control-Allow-Origin', '*');
+            return $response;
+        } else {
+            $response = new Response("could not create account");
+            $response->headers->set('Access-Control-Allow-Origin', '*');
+            return $response;
 
-            return $this->redirectToRoute('app_home');
         }
 
-        return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form->createView(),
-        ]);
     }
 }
